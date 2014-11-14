@@ -5,44 +5,13 @@ from Page import Page
 from selenium.webdriver import ActionChains, DesiredCapabilities, Remote
 from Utils import utils
 from selenium.common.exceptions import StaleElementReferenceException, ElementNotVisibleException
+from LinkContainer import LinkContainer
+import time
 
 
-links = []
 urls_with_parameters = []
 browser = 'CHROME'
-
-def try_page(url, driver):
-
-    page = Page(driver, url)
-    page.open()
-
-    buttons = page.get_all_button()
-    buttons_count = len(buttons) # Определяем количество подходящих нам кнопок
-
-    for i in xrange(buttons_count):
-        """
-        Для каждой кнопки заполняем все input и нажимаем на нее.
-        Если в результате нажатия срабатывает ajax(пока нету),
-        или нас редиректит на ссылку с параметрами (содержит '?'),
-        то записываем ее в список интересных ссылок
-        """
-        page.open()
-        buttons = page.get_all_button()
-        try:
-            page.fill_all_input()
-            buttons[i].click()
-
-            utils.wait_for_ajax_complete(driver)
-            utils.wait_for_document_ready(driver) # Достаточно прогрузки шапки, поменять
-
-            if '?' in driver.current_url:
-                urls_with_parameters.append(driver.current_url)
-
-        except (StaleElementReferenceException, ElementNotVisibleException):
-            pass
-
-    print(urls_with_parameters)
-
+MAX_PAGES = 30
 
 def add_link(url, driver): """
 Функция примиет на вход url, находит на странице все ссылки в пределах
@@ -56,15 +25,27 @@ pass
 
 if __name__ == '__main__':
 
-    links.append("https://mail.ru/")
+    MAIN_URL = "http://yandex.ru/" # Считывать, как аргумент командной строки, обязательно / в конце!
 
     driver = Remote(
             command_executor='http://127.0.0.1:4444/wd/hub',
             desired_capabilities=getattr(DesiredCapabilities, browser).copy()
     )
 
-    for url in links:
-        add_link()
-        try_page(url, driver)
+    link_container = LinkContainer()
+    link_container.add([MAIN_URL])
+
+    i = 0
+    while ((i < link_container.get_length()) and (i < MAX_PAGES)):
+        url = link_container.get_link(i)
+        print(i, url)
+        page = Page(driver=driver, url=url)
+        urls_with_parameters += page.try_page() # Подумать об уникальности урлов с параметрами
+        link_container.add(page.get_inner_links())
+
+        i += 1
+        time.sleep(0.5)
+
+    print(urls_with_parameters)
 
     driver.quit()
