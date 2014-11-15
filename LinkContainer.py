@@ -10,6 +10,13 @@ class LinkContainer(object):
         pass
 
     def add(self, array):
+        """
+        Если не лох - переделай. Так пиздец как плохо.
+        Даже страшно подумать, как это плохо!
+        Возможно надо вставить сет, но проверить, что он не выстраивается по алфавиту
+        :param array:
+        :return:
+        """
         for i in array:
             flag = True
             if '?' in i:
@@ -22,8 +29,6 @@ class LinkContainer(object):
 
             if (flag == True):
                 self.links.append(i)
-
-
 
     def get_length(self):
         return len(self.links)

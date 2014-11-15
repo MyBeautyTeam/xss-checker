@@ -56,6 +56,7 @@ class Page(object):
 
             if href is not None:
                 if (domain in href): # По настройке можно выключить поддержку поддоменов '.'+domain not in href. но нужна еще проверка на www
+
                     inside_links.append(href)
 
 #                    print(href)
@@ -88,7 +89,7 @@ class Page(object):
                 buttons[i].click()
 
                 utils.wait_for_ajax_complete(self.driver)
-                utils.wait_for_document_ready(self.driver) # Достаточно прогрузки шапки, поменять
+                utils.wait_for_head_load(self.driver) # Достаточно прогрузки шапки, поменять
 
                 if '?' in self.driver.current_url:
                     urls_with_parameters.append(self.driver.current_url)

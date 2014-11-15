@@ -36,3 +36,9 @@ def wait_for_ajax_complete(driver):
         WebDriverWait(driver, 10, 3).until(ajax_complete, 'AJAX')
     except TimeoutException:
         pass
+
+def wait_for_head_load(driver):
+    BODY = 'body'
+    WebDriverWait(driver, 10, 0.1).until(
+            lambda d: d.find_elements_by_css_selector(BODY)
+    )

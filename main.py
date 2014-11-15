@@ -9,9 +9,8 @@ from LinkContainer import LinkContainer
 import time
 
 
-urls_with_parameters = []
 browser = 'CHROME'
-MAX_PAGES = 30
+MAX_PAGES = 50
 
 def add_link(url, driver): """
 Функция примиет на вход url, находит на странице все ссылки в пределах
@@ -25,7 +24,7 @@ pass
 
 if __name__ == '__main__':
 
-    MAIN_URL = "http://yandex.ru/" # Считывать, как аргумент командной строки, обязательно / в конце!
+    MAIN_URL = "http://www.lic1.vrn.ru/" # Считывать, как аргумент командной строки, обязательно / в конце!
 
     driver = Remote(
             command_executor='http://127.0.0.1:4444/wd/hub',
@@ -35,17 +34,24 @@ if __name__ == '__main__':
     link_container = LinkContainer()
     link_container.add([MAIN_URL])
 
+    urls_with_parameters = []
     i = 0
+
     while ((i < link_container.get_length()) and (i < MAX_PAGES)):
         url = link_container.get_link(i)
-        print(i, url)
+        print(i, url, link_container.get_length())
         page = Page(driver=driver, url=url)
-        urls_with_parameters += page.try_page() # Подумать об уникальности урлов с параметрами
+        page.open()
         link_container.add(page.get_inner_links())
+
+        urls_with_parameters += page.try_page()
 
         i += 1
         time.sleep(0.5)
 
+    urls_with_parameters = set(urls_with_parameters) #Сделать список уникальным
+
+    print(link_container.get_all_links())
     print(urls_with_parameters)
 
     driver.quit()
