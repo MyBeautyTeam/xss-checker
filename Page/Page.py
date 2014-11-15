@@ -4,6 +4,8 @@ __author__ = 'popka'
 import urlparse
 import Utils.utils as utils
 from selenium.common.exceptions import StaleElementReferenceException, ElementNotVisibleException, WebDriverException
+import re
+
 
 
 class Page(object):
@@ -45,9 +47,10 @@ class Page(object):
         '''
         all_links = self.driver.find_elements_by_tag_name(self.LINKS)
 
-        #Доменное имя
-        domain = self.url[self.url.index("://")+3:]
+        domain = self.url[self.url.index("://")+3:] #Доменное имя
         domain = domain[:domain.index("/")]
+
+        regular = re.compile('\.+\w+$', re.IGNORECASE) #Поиск конструкций вида .doc
 
         inside_links = []
 
@@ -55,9 +58,24 @@ class Page(object):
             href = link.get_attribute('href')
 
             if href is not None:
-                if (domain in href): # По настройке можно выключить поддержку поддоменов '.'+domain not in href. но нужна еще проверка на www
+                if (domain in href): # Находимся ли мы в пределах сайта?
+                    # По настройке можно выключить поддержку поддоменов '.'+domain not in href. но нужна еще проверка на www
 
-                    inside_links.append(href)
+                    if '#' in href: #Если есть '#' - отрезаем ее
+                        href = href[0:href.index('#')]
+
+                    if '?' in href: #Если есть '?' - отрезаем его
+                        href = href[0:href.index('?')]
+
+                    href_without_domain = href[href.index(domain)+len(domain):] # выделяем часть урла без доменного имени
+                    extensions = regular.findall(href_without_domain) # производим по нему поиск конструкций типа .doc
+
+                    if len(extensions) == 0: #Если нет конструции вида .doc,
+                        inside_links.append(href)
+                    else:
+                        extensions = extensions[0]
+                        if extensions=='.html' or extensions=='.htm' or extensions == '.xml': #Продолжать список согласно опыту
+                            inside_links.append(href)
 
 #                    print(href)
 

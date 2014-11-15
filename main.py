@@ -10,7 +10,7 @@ import time
 
 
 browser = 'CHROME'
-MAX_PAGES = 50
+MAX_PAGES = 60
 
 def add_link(url, driver): """
 Функция примиет на вход url, находит на странице все ссылки в пределах
