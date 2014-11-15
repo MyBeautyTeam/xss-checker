@@ -1,6 +1,8 @@
 #coding=utf-8
 __author__ = 'popka'
 
+import main
+
 
 class LinkContainer(object):
 
@@ -19,8 +21,9 @@ class LinkContainer(object):
         """
         for i in array:
             flag = True
-            if '?' in i:
-                i = i[0:i.index('?')]
+            if (not main.QUEST_SYMBOL_SUPPORTED):
+                if '?' in i:
+                    i = i[0:i.index('?')]
 
             for j in self.links:
                 if (i==j):

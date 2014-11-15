@@ -64,9 +64,6 @@ class Page(object):
                     if '#' in href: #Если есть '#' - отрезаем ее
                         href = href[0:href.index('#')]
 
-                    if '?' in href: #Если есть '?' - отрезаем его
-                        href = href[0:href.index('?')]
-
                     href_without_domain = href[href.index(domain)+len(domain):] # выделяем часть урла без доменного имени
                     extensions = regular.findall(href_without_domain) # производим по нему поиск конструкций типа .doc
 

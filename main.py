@@ -5,12 +5,13 @@ from Page import Page
 from selenium.webdriver import ActionChains, DesiredCapabilities, Remote
 from Utils import utils
 from selenium.common.exceptions import StaleElementReferenceException, ElementNotVisibleException
-from LinkContainer import LinkContainer
+import LinkContainer
 import time
 
 
 browser = 'CHROME'
 MAX_PAGES = 60
+QUEST_SYMBOL_SUPPORTED = False
 
 def add_link(url, driver): """
 Функция примиет на вход url, находит на странице все ссылки в пределах
@@ -24,14 +25,14 @@ pass
 
 if __name__ == '__main__':
 
-    MAIN_URL = "http://www.lic1.vrn.ru/" # Считывать, как аргумент командной строки, обязательно / в конце!
+    MAIN_URL = "http://vk.com/" # Считывать, как аргумент командной строки, обязательно '/' в конце!
 
     driver = Remote(
             command_executor='http://127.0.0.1:4444/wd/hub',
             desired_capabilities=getattr(DesiredCapabilities, browser).copy()
     )
 
-    link_container = LinkContainer()
+    link_container = LinkContainer.LinkContainer()
     link_container.add([MAIN_URL])
 
     urls_with_parameters = []
