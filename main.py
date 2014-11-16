@@ -7,25 +7,26 @@ from Utils import utils
 from selenium.common.exceptions import StaleElementReferenceException, ElementNotVisibleException
 import LinkContainer
 import time
-
+import os
+os.system("command")
 
 browser = 'CHROME'
 MAX_PAGES = 60
 QUEST_SYMBOL_SUPPORTED = False
+MAIN_URL = ""
 
-def add_link(url, driver): """
-Функция примиет на вход url, находит на странице все ссылки в пределах
-этого сайта и добавляет их в links. Не должно быть повторений
-:param url:
-:param driver:
-:return:
-"""
-pass
+'''
+Заметка
+Добавить проверку на jQuery. wait_for_ajax не сработает без него!
+'''
 
 
 if __name__ == '__main__':
 
-    MAIN_URL = "http://vk.com/" # Считывать, как аргумент командной строки, обязательно '/' в конце!
+    os.system("java -jar Selenium/selenium-server-standalone-2.43.1.jar")
+    time.sleep(2)
+
+    MAIN_URL = "file:///home/popka/Tech-Mail/Security/TestServer/index.html" # Считывать, как аргумент командной строки, обязательно '/' в конце!
 
     driver = Remote(
             command_executor='http://127.0.0.1:4444/wd/hub',
@@ -46,6 +47,9 @@ if __name__ == '__main__':
         link_container.add(page.get_inner_links())
 
         urls_with_parameters += page.try_page()
+
+        if page.is_alert_appear():
+            print('text = ', page.get_alert_text_and_close())
 
         i += 1
         time.sleep(0.5)

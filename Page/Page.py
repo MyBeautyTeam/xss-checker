@@ -3,7 +3,10 @@ __author__ = 'popka'
 
 import urlparse
 import Utils.utils as utils
+from selenium.common.exceptions import WebDriverException, TimeoutException, NoAlertPresentException
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import StaleElementReferenceException, ElementNotVisibleException, WebDriverException
+from selenium.webdriver.support import expected_conditions as EC
 import re
 
 
@@ -89,7 +92,6 @@ class Page(object):
             возвращает список интересных ссылок
         """
         self.open()
-
         urls_with_parameters = []
 
         buttons = self._get_all_button()
@@ -98,7 +100,6 @@ class Page(object):
         for i in xrange(buttons_count):
             self.open()
             buttons = self._get_all_button()
-
             try:
                 self._fill_all_input()
                 buttons[i].click()
@@ -113,6 +114,23 @@ class Page(object):
                 pass
 
         return urls_with_parameters
+
+    def is_alert_appear(self):
+        try:
+            WebDriverWait(self.driver, 0.7).until(EC.alert_is_present())
+            return True
+
+        except TimeoutException:
+            return False
+
+    def get_alert_text_and_close(self):
+
+        alert = self.driver.switch_to_alert()
+        text = alert.text
+        alert.accept()
+        print(12345)
+
+        return text
 
 
 

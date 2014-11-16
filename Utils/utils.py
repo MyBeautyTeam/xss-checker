@@ -33,7 +33,7 @@ def ajax_complete(driver):
 
 def wait_for_ajax_complete(driver):
     try:
-        WebDriverWait(driver, 10, 3).until(ajax_complete, 'AJAX')
+        WebDriverWait(driver, 10, 0.5).until(ajax_complete, 'AJAX')
     except TimeoutException:
         pass
 
