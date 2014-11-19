@@ -2,12 +2,12 @@ __author__ = 'popka'
 
 from selenium.common.exceptions import WebDriverException, TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
+KEY = 'abcd'
 
 
 fill_all_input = 'var inputs = document.querySelectorAll("input"); ' \
                  'for (var i=0; i<inputs.length; i++) {' \
-                    'inputs[i].value = "abcd"' \
-                 '}'
+                    'inputs[i].value = "' + KEY + '"' + '}'
 
 
 def is_document_ready(driver):

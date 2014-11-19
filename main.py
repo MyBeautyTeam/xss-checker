@@ -8,6 +8,7 @@ from selenium.common.exceptions import StaleElementReferenceException, ElementNo
 import LinkContainer
 import time
 import os
+from XssChecker import XssChecker
 os.system("command")
 
 browser = 'CHROME'
@@ -23,10 +24,10 @@ MAIN_URL = ""
 
 if __name__ == '__main__':
 
-    os.system("java -jar Selenium/selenium-server-standalone-2.43.1.jar")
-    time.sleep(2)
+    #os.system('java -jar Selenium/selenium-server-standalone-2.43.1.jar')
+    #time.sleep(2)
 
-    MAIN_URL = "file:///home/popka/Tech-Mail/Security/TestServer/index.html" # Считывать, как аргумент командной строки, обязательно '/' в конце!
+    MAIN_URL = "http://www.insecurelabs.org/task/Rule1" # Считывать, как аргумент командной строки, обязательно '/' в конце!
 
     driver = Remote(
             command_executor='http://127.0.0.1:4444/wd/hub',
@@ -41,9 +42,11 @@ if __name__ == '__main__':
 
     while ((i < link_container.get_length()) and (i < MAX_PAGES)):
         url = link_container.get_link(i)
+
         print(i, url, link_container.get_length())
         page = Page(driver=driver, url=url)
         page.open()
+
         link_container.add(page.get_inner_links())
 
         urls_with_parameters += page.try_page()
@@ -58,5 +61,9 @@ if __name__ == '__main__':
 
     print(link_container.get_all_links())
     print(urls_with_parameters)
+
+    xss_checker = XssChecker(driver)
+    for url in urls_with_parameters:
+        xss_checker.find_xss(url)
 
     driver.quit()

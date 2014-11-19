@@ -128,7 +128,6 @@ class Page(object):
         alert = self.driver.switch_to_alert()
         text = alert.text
         alert.accept()
-        print(12345)
 
         return text
 
