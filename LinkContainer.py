@@ -20,6 +20,7 @@ class LinkContainer(object):
         :return:
         """
         for i in array:
+            i.lower()
             flag = True
             if (not main.QUEST_SYMBOL_SUPPORTED):
                 if '?' in i:

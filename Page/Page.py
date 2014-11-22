@@ -13,9 +13,7 @@ import re
 
 class Page(object):
     PATH = ''
-    BUTTON = "button"
-    INPUT_SUBMIT = 'input[type=submit]'
-    INPUT_IMAGE = 'input[type=image]'
+    FORM = "form"
     LINKS = 'a'
 
     def __init__(self, driver, url):
@@ -33,14 +31,12 @@ class Page(object):
         '''
         self.driver.execute_script(utils.fill_all_input)
 
-    def _get_all_button(self):
+    def _get_all_forms(self):
         '''
-        возвращает массив всех "кнопок"
+        возвращает массив всех форм
         :return:
         '''
-        button = self.driver.find_elements_by_tag_name(self.BUTTON)
-        button += (self.driver.find_elements_by_css_selector(self.INPUT_SUBMIT))
-        button += (self.driver.find_elements_by_css_selector(self.INPUT_IMAGE))
+        button = self.driver.find_elements_by_tag_name(self.FORM)
         return button
 
     def get_inner_links(self):
@@ -94,15 +90,15 @@ class Page(object):
         self.open()
         urls_with_parameters = []
 
-        buttons = self._get_all_button()
-        buttons_count = len(buttons) # Определяем количество подходящих нам кнопок
+        forms = self._get_all_forms()
+        forms_count = len(forms) # Определяем количество подходящих нам кнопок
 
-        for i in xrange(buttons_count):
+        for i in xrange(forms_count):
             self.open()
-            buttons = self._get_all_button()
+            forms = self._get_all_forms()
             try:
                 self._fill_all_input()
-                buttons[i].click()
+                forms[i].submit()
 
                 utils.wait_for_ajax_complete(self.driver)
                 utils.wait_for_head_load(self.driver) # Достаточно прогрузки шапки, поменять

