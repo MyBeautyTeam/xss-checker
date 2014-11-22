@@ -62,8 +62,14 @@ if __name__ == '__main__':
     print(link_container.get_all_links())
     print(urls_with_parameters)
 
-    #xss_checker = XssChecker(driver)
-    #for url in urls_with_parameters:
-     #   xss_checker.find_xss(url)
+    #urls_with_parameters = set(['https://xss-doc.appspot.com/demo/2?query=abcd']) #Сделать список уникальным
+
+
+    xss_checker = XssChecker(driver)
+    for url in urls_with_parameters:
+        xss_checker.find_xss_dict(url)
 
     driver.quit()
+'''
+
+'''

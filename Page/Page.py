@@ -128,6 +128,24 @@ class Page(object):
         return text
 
 
+    def find_element_by_tag_and_attributes(self, tag, attr):
+        elements = self.driver.find_elements_by_tag_name(tag)
+        for el in elements:
+            count_of_hit_attribute = 0
+            for attribute in attr:
+                attrib = el.get_attribute(attribute)
+                attr_attr = attr[attribute]
+                if (el.get_attribute(attribute) is not None):
+                    if (attr[attribute] in el.get_attribute(attribute)):
+                        count_of_hit_attribute += 1
+
+            if (count_of_hit_attribute == len(attr)):
+                return True
+
+        return False
+
+
+
 
 
 
