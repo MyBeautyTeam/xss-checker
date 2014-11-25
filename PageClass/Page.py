@@ -8,6 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import StaleElementReferenceException, ElementNotVisibleException, WebDriverException
 from selenium.webdriver.support import expected_conditions as EC
 import re
+import urllib
 
 
 
@@ -24,6 +25,11 @@ class Page(object):
         url = urlparse.urljoin(self.url, self.PATH)
         self.driver.get(url)
         utils.wait_for_document_ready(self.driver)
+
+    def open_without_wait(self):
+        url = urlparse.urljoin(self.url, self.PATH)
+        self.driver.get(url)
+        #utils.wait_for_document_ready(self.driver)
 
     def _fill_all_input(self):
         '''
@@ -104,7 +110,9 @@ class Page(object):
                 utils.wait_for_head_load(self.driver) # Достаточно прогрузки шапки, поменять
 
                 if '?' in self.driver.current_url:
-                    urls_with_parameters.append(self.driver.current_url)
+
+                    decoded_url = urllib.unquote(self.driver.current_url).decode('utf8')
+                    urls_with_parameters.append(decoded_url)
 
             except (StaleElementReferenceException, ElementNotVisibleException, WebDriverException):
                 pass
@@ -113,7 +121,7 @@ class Page(object):
 
     def is_alert_appear(self):
         try:
-            WebDriverWait(self.driver, 0.7).until(EC.alert_is_present())
+            WebDriverWait(self.driver, 5, 0.5).until(EC.alert_is_present())
             return True
 
         except TimeoutException:
@@ -143,7 +151,6 @@ class Page(object):
                 return True
 
         return False
-
 
 
 

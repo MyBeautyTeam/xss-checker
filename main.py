@@ -1,15 +1,15 @@
 #coding=utf-8
 __author__ = 'popka'
 
-from Page import Page
+from PageClass.Page import Page
 from selenium.webdriver import ActionChains, DesiredCapabilities, Remote
 from Utils import utils
 from selenium.common.exceptions import StaleElementReferenceException, ElementNotVisibleException
 import LinkContainer
+from Utils.utils import ajax_complete
 import time
 import os
 from XssChecker import XssChecker
-os.system("command")
 
 browser = 'CHROME'
 MAX_PAGES = 60
@@ -24,10 +24,13 @@ MAIN_URL = ""
 
 if __name__ == '__main__':
 
+    #os.system("command")
     #os.system('java -jar Selenium/selenium-server-standalone-2.43.1.jar')
     #time.sleep(2)
 
-    MAIN_URL = "http://www.insecurelabs.org/Task/" # Считывать, как аргумент командной строки, обязательно '/' в конце!
+    #MAIN_URL = "https://xss-doc.appspot.com/demo/2" # Считывать, как аргумент командной строки, обязательно '/' в конце!
+    MAIN_URL = "http://www.insecurelabs.org/Task" # Считывать, как аргумент командной строки, обязательно '/' в конце!
+
 
     driver = Remote(
             command_executor='http://127.0.0.1:4444/wd/hub',
@@ -39,11 +42,13 @@ if __name__ == '__main__':
 
     urls_with_parameters = []
     i = 0
+    '''
 
+    print('Generating map of site')
     while ((i < link_container.get_length()) and (i < MAX_PAGES)):
         url = link_container.get_link(i)
-
-        print(i, url, link_container.get_length())
+        print('.')
+        #print(i, url, link_container.get_length())
         page = Page(driver=driver, url=url)
         page.open()
 
@@ -51,8 +56,8 @@ if __name__ == '__main__':
 
         urls_with_parameters += page.try_page()
 
-        if page.is_alert_appear():
-            print('text = ', page.get_alert_text_and_close())
+        #if page.is_alert_appear():
+         #   print('text = ', page.get_alert_text_and_close())
 
         i += 1
         time.sleep(0.5)
@@ -62,14 +67,14 @@ if __name__ == '__main__':
     print(link_container.get_all_links())
     print(urls_with_parameters)
 
+
     #urls_with_parameters = set(['https://xss-doc.appspot.com/demo/2?query=abcd']) #Сделать список уникальным
 
-
+    '''
+    urls_with_parameters = set(['http://www.insecurelabs.org/Task/Rule2?query=abcd']) #Сделать список уникальным
     xss_checker = XssChecker(driver)
+    print('Finding xss...')
     for url in urls_with_parameters:
-        xss_checker.find_xss_dict(url)
+        xss_checker.find_xss(url)
 
     driver.quit()
-'''
-
-'''

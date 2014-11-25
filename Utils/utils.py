@@ -19,7 +19,7 @@ def is_document_ready(driver):
 
 def wait_for_document_ready(driver):
     try:
-        WebDriverWait(driver, 10, 1).until(is_document_ready, 'document ready')
+        WebDriverWait(driver, 5, 0.2).until(is_document_ready, 'document ready')
     except TimeoutException:
         pass
 
