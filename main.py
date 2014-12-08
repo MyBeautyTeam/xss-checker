@@ -21,6 +21,11 @@ MAIN_URL = ""
 Добавить проверку на jQuery. wait_for_ajax не сработает без него!
 '''
 
+def try_one_page(driver, url):
+    pageo = Page(driver=driver, url=url)
+    pageo.open()
+    return pageo.try_page()
+
 
 if __name__ == '__main__':
 
@@ -29,7 +34,7 @@ if __name__ == '__main__':
     #time.sleep(2)
 
     #MAIN_URL = "https://xss-doc.appspot.com/demo/2" # Считывать, как аргумент командной строки, обязательно '/' в конце!
-    MAIN_URL = "http://192.168.5.52/DVWA-1.0.8/index.php" # Считывать, как аргумент командной строки, обязательно '/' в конце!
+    MAIN_URL = "http://192.168.5.52/DVWA-1.0.8/" # Считывать, как аргумент командной строки
 
 
     driver = Remote(
@@ -43,7 +48,7 @@ if __name__ == '__main__':
     time.sleep(20)
     # =======
 
-
+    '''
     link_container = LinkContainer.LinkContainer()
     link_container.add([MAIN_URL])
 
@@ -70,13 +75,20 @@ if __name__ == '__main__':
     print(link_container.get_all_links())
     print(urls_with_parameters)
 
+    '''
 
     #urls_with_parameters = set(['https://xss-doc.appspot.com/demo/2?query=abcd']) #Сделать список уникальным
 
-    urls_with_parameters = set(['http://192.168.5.52/DVWA-1.0.8/vulnerabilities/xss_r/?name=abcd#']) #Сделать список уникальным
+    urls_with_parameters = set()
+
+    if (True): # ЕСЛИ ОДИН УРЛ ВКЛЮЧАЕМ ЭТУ ФУНКЦИЮ
+        urls_with_parameters = set(try_one_page(driver=driver, url='http://192.168.5.52/DVWA-1.0.8/vulnerabilities/xss_r/'))
+
+    print(urls_with_parameters)
+    #urls_with_parameters = set(['http://192.168.5.52/DVWA-1.0.8/vulnerabilities/xss_r/?name=abcd#']) #Сделать список уникальным
     xss_checker = XssChecker(driver)
     print('Finding xss...')
     for url in urls_with_parameters:
         xss_checker.find_xss(url)
 
-    driver.quit()
+    #driver.quit()

@@ -129,8 +129,7 @@ class XssChecker(object):
                       ]
 
     medium_xss_list = [
-            '<IMG """><SCRIPT>location.hash = "SMILE"</SCRIPT>">'
-            '<IMG """><SCRIPT>alert("XSS")</SCRIPT>">',
+            '<IMG """><SCRIPT>location.hash="SMILE"</SCRIPT>">',
             ]
 
     def __init__(self, driver):
@@ -140,6 +139,7 @@ class XssChecker(object):
         for xss_script in self.medium_xss_list:
             xss_url = url.replace(utils.KEY, xss_script)
             xss_url = self._decode_url(xss_url)
+            print('check ', xss_url)
             page = Page(self.driver, xss_url)
             page.open()
             print('.')
