@@ -3,19 +3,26 @@ __author__ = 'popka'
 
 import urlparse
 import Utils.utils as utils
-from selenium.common.exceptions import WebDriverException, TimeoutException, NoAlertPresentException
+from selenium.common.exceptions import WebDriverException, TimeoutException, NoAlertPresentException, StaleElementReferenceException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import StaleElementReferenceException, ElementNotVisibleException, WebDriverException
 from selenium.webdriver.support import expected_conditions as EC
 import re
 import urllib
 
-HASH = "#SMILE"
-
 class Page(object):
     PATH = ''
     FORM = "form"
     LINKS = 'a'
+    INPUT = 'input'
+    TEXT_AREA = 'textarea'
+    BUTTON = 'button'
+    SUBMIT_INPUT = 'input[type="submit"]'
+
+
+    KEY = 'abcd'
+    HASH = "#SMILE"
+
 
     def __init__(self, driver, url):
         self.driver = driver
@@ -31,19 +38,42 @@ class Page(object):
         self.driver.get(url)
         #utils.wait_for_document_ready(self.driver)
 
-    def _fill_all_input(self):
+    def fill_all_input(self, text):
         '''
         Заполняет все input на странице текстом
         '''
-        self.driver.execute_script(utils.fill_all_input)
-        self.driver.execute_script(utils.fill_all_textarea)
+        input = self.driver.find_elements_by_tag_name(self.INPUT)
+        for i in input:
+            try:
+                i.send_keys(text)
+            except StaleElementReferenceException:
+                pass
 
-    def _get_all_forms(self):
+        input = self.driver.find_elements_by_tag_name(self.TEXT_AREA)
+        for i in input:
+            try:
+                i.send_keys(text)
+            except StaleElementReferenceException:
+                pass
+
+
+    def get_all_forms(self):
         '''
         возвращает массив всех форм
         :return:
         '''
-        button = self.driver.find_elements_by_tag_name(self.FORM)
+        forms = self.driver.find_elements_by_tag_name(self.FORM)
+        return forms
+
+    def get_all_button(self):
+        '''
+        возвращает массив всех форм
+        :return:
+        '''
+        button = []
+        button += self.driver.find_elements_by_css_selector(self.BUTTON)
+
+        button += self.driver.find_elements_by_css_selector(self.SUBMIT_INPUT)
         return button
 
     def get_inner_links(self):
@@ -97,14 +127,14 @@ class Page(object):
         self.open()
         urls_with_parameters = []
 
-        forms = self._get_all_forms()
+        forms = self.get_all_forms()
         forms_count = len(forms) # Определяем количество подходящих нам кнопок
 
         for i in xrange(forms_count):
             self.open()
-            forms = self._get_all_forms()
+            forms = self.get_all_forms()
             try:
-                self._fill_all_input()
+                self.fill_all_input(self.KEY)
                 forms[i].submit()
 
                 utils.wait_for_ajax_complete(self.driver)
@@ -123,7 +153,7 @@ class Page(object):
     def check_xss(self):
         try:
             hash = self.driver.execute_script("return location.hash")
-            return HASH == hash
+            return self.HASH == hash
 
         except TimeoutException:
             return False

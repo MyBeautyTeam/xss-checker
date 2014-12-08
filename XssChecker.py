@@ -4,7 +4,8 @@ from PageClass.Page import Page
 from Utils import utils
 import urllib
 import urlparse
-
+from selenium.webdriver.support.ui import WebDriverWait
+import time
 
 class XssChecker(object):
 
@@ -130,6 +131,7 @@ class XssChecker(object):
 
     medium_xss_list = [
             '<IMG """><SCRIPT>location.hash="SMILE"</SCRIPT>">',
+            '<img src=x onerror=\"location.hash=\'SMILE\';\"'
             ]
 
     def __init__(self, driver):
@@ -137,7 +139,7 @@ class XssChecker(object):
 
     def find_xss(self, url):
         for xss_script in self.medium_xss_list:
-            xss_url = url.replace(utils.KEY, xss_script)
+            xss_url = url.replace(Page.KEY, xss_script)
             xss_url = self._decode_url(xss_url)
             print('check ', xss_url)
             page = Page(self.driver, xss_url)
@@ -149,31 +151,27 @@ class XssChecker(object):
 
         print(self.xss_urls)
 
-    def find_xss_dict(self, url):
-        for xss_script in self.dict:
-            try:
-                xss_url = url.replace(utils.KEY, xss_script)
-                xss_url = self._decode_url(xss_url)
-                page = Page(self.driver, xss_url)
-                page.open_without_wait()
 
-                #print("trying: ", xss_url)
+    def find_xss_in_one_page(self, url):
+        for xss_script in self.medium_xss_list:
+            page = Page(self.driver, url)
 
+            buttons = page.get_all_button()
+            count_of_forms = len(buttons)
+            for i in xrange(count_of_forms):
+                page.open()
+                print(xss_script)
+                page.fill_all_input(xss_script)
+
+                time.sleep(3)
+
+                button = page.get_all_button()[i]
+                button.click()
+
+                time.sleep(5)
                 if (page.check_xss()):
-                    page.get_alert_text_and_close()
-                    print('xss was found on: ', xss_url)
-                    self.xss_urls.add(xss_url)
-                    break
-                else:
-                    tag = self.dict[xss_script][0]
-                    attr = self.dict[xss_script][1]
-                    if (page.find_element_by_tag_and_attributes(tag=tag, attr=attr)):
-                        print('xss was found on: ', xss_url)
-                        self.xss_urls.add(xss_url)
-            except:
-                pass
-
-        print(self.xss_urls)
+                    print('xss was found on: ', url)
+                    self.xss_urls.add(url)
 
 
     def _decode_url(self, url):

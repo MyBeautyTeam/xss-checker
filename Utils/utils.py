@@ -2,16 +2,17 @@ __author__ = 'popka'
 
 from selenium.common.exceptions import WebDriverException, TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
-KEY = 'abcd'
 
 
-fill_all_input = 'var inputs = document.querySelectorAll("input"); ' \
-                 'for (var i=0; i<inputs.length; i++) {' \
-                    'inputs[i].value = "' + KEY + '"' + '}'
 
-fill_all_textarea = 'var inputs = document.querySelectorAll("textarea"); ' \
-                 'for (var i=0; i<inputs.length; i++) {' \
-                    'inputs[i].value = "' + KEY + '"' + '}'
+def get_fill_all_input_script(text):
+    script = 'var inputs = document.querySelectorAll(\"input\"); for (var i=0; i<inputs.length; i++) { inputs[i].value = \'' + text + '\'' + '}'
+    print(script)
+    return script
+
+def get_fill_all_textarea_script(text):
+    string = 'var inputs = document.querySelectorAll("textarea"); for (var i=0; i<inputs.length; i++) { inputs[i].value = \'' + text + '\'' + '}'
+    return string
 
 
 def is_document_ready(driver):
@@ -46,3 +47,17 @@ def wait_for_head_load(driver):
     WebDriverWait(driver, 10, 0.1).until(
             lambda d: d.find_elements_by_css_selector(BODY)
     )
+
+
+def fill_all_text_field(driver, text):
+
+    fill_all_input = 'var inputs = document.querySelectorAll("input"); ' \
+                 'for (var i=0; i<inputs.length; i++) {' \
+                    'inputs[i].value = "' + text + '"' + '}'
+
+    fill_all_textarea = 'var inputs = document.querySelectorAll("textarea"); ' \
+                 'for (var i=0; i<inputs.length; i++) {' \
+                    'inputs[i].value = "' + text + '"' + '}'
+
+    driver.execute_script(fill_all_input)
+    driver.execute_script(fill_all_textarea)

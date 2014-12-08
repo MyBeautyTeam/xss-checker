@@ -29,26 +29,32 @@ def try_one_page(driver, url):
 
 if __name__ == '__main__':
 
-    #os.system("command")
-    #os.system('java -jar Selenium/selenium-server-standalone-2.43.1.jar')
-    #time.sleep(2)
 
-    #MAIN_URL = "https://xss-doc.appspot.com/demo/2" # Считывать, как аргумент командной строки, обязательно '/' в конце!
-    MAIN_URL = "http://192.168.5.52/DVWA-1.0.8/" # Считывать, как аргумент командной строки
+    """
+    Чтобы не включать selenuim сервер руками. Через раз работает. ХЗ почему.
+    os.system("command")
+    os.system('java -jar Selenium/selenium-server-standalone-2.43.1.jar')
+    time.sleep(2)
+    """
 
+    MAIN_URL = "https://xss-doc.appspot.com/demo/2" # Считывать, как аргумент командной строки
 
     driver = Remote(
             command_executor='http://127.0.0.1:4444/wd/hub',
             desired_capabilities=getattr(DesiredCapabilities, browser).copy()
     )
 
-    # ======= auth
+
+    '''
+    auth ВВОД ВРЕМЕНИ, Отводимого на авторизацию
     page = Page(driver=driver, url=MAIN_URL)
     page.open()
     time.sleep(20)
-    # =======
-
     '''
+
+    #'''
+    #КАРТА САЙТА. Нужна, если чекаем все урлы на страничке (обычныый случай)
+
     link_container = LinkContainer.LinkContainer()
     link_container.add([MAIN_URL])
 
@@ -75,20 +81,26 @@ if __name__ == '__main__':
     print(link_container.get_all_links())
     print(urls_with_parameters)
 
-    '''
-
-    #urls_with_parameters = set(['https://xss-doc.appspot.com/demo/2?query=abcd']) #Сделать список уникальным
+    #''' Карта сайта
 
     urls_with_parameters = set()
 
-    if (True): # ЕСЛИ ОДИН УРЛ ВКЛЮЧАЕМ ЭТУ ФУНКЦИЮ
-        urls_with_parameters = set(try_one_page(driver=driver, url='http://192.168.5.52/DVWA-1.0.8/vulnerabilities/xss_r/'))
+    '''
+
+    if (True): # ЕСЛИ ОДИН УРЛ ВКЛЮЧАЕМ ЭТО ВЕТВЛЕНИЕ ВМЕСТО ВЕРХНЕГО
+        urls_with_parameters = set(try_one_page(driver=driver, url=MAIN_URL))
+
+    '''
 
     print(urls_with_parameters)
-    #urls_with_parameters = set(['http://192.168.5.52/DVWA-1.0.8/vulnerabilities/xss_r/?name=abcd#']) #Сделать список уникальным
     xss_checker = XssChecker(driver)
+
+    #Если обычный поиск
     print('Finding xss...')
     for url in urls_with_parameters:
         xss_checker.find_xss(url)
 
-    #driver.quit()
+    # Если поиск в диалоге, может глючить. Для него не нужна карта сайта!
+    #xss_checker.find_xss_in_one_page(MAIN_URL)
+
+    driver.quit()
