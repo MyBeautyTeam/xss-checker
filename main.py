@@ -11,7 +11,7 @@ import time
 import os
 from XssChecker import XssChecker
 
-browser = 'CHROME'
+browser = 'FIREFOX'
 MAX_PAGES = 60
 QUEST_SYMBOL_SUPPORTED = False
 MAIN_URL = ""
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     #time.sleep(2)
 
     #MAIN_URL = "https://xss-doc.appspot.com/demo/2" # Считывать, как аргумент командной строки, обязательно '/' в конце!
-    MAIN_URL = "http://www.insecurelabs.org/Task" # Считывать, как аргумент командной строки, обязательно '/' в конце!
+    MAIN_URL = "http://192.168.5.52/DVWA-1.0.8/index.php" # Считывать, как аргумент командной строки, обязательно '/' в конце!
 
 
     driver = Remote(
@@ -37,13 +37,19 @@ if __name__ == '__main__':
             desired_capabilities=getattr(DesiredCapabilities, browser).copy()
     )
 
+    # ======= auth
+    page = Page(driver=driver, url=MAIN_URL)
+    page.open()
+    time.sleep(20)
+    # =======
+
+    '''
+
     link_container = LinkContainer.LinkContainer()
     link_container.add([MAIN_URL])
 
     urls_with_parameters = []
     i = 0
-    '''
-
     print('Generating map of site')
     while ((i < link_container.get_length()) and (i < MAX_PAGES)):
         url = link_container.get_link(i)
@@ -71,7 +77,7 @@ if __name__ == '__main__':
     #urls_with_parameters = set(['https://xss-doc.appspot.com/demo/2?query=abcd']) #Сделать список уникальным
 
     '''
-    urls_with_parameters = set(['http://www.insecurelabs.org/Task/Rule2?query=abcd']) #Сделать список уникальным
+    urls_with_parameters = set(['http://192.168.5.52/DVWA-1.0.8/vulnerabilities/xss_r/?name=abcd#']) #Сделать список уникальным
     xss_checker = XssChecker(driver)
     print('Finding xss...')
     for url in urls_with_parameters:

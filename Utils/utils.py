@@ -9,6 +9,10 @@ fill_all_input = 'var inputs = document.querySelectorAll("input"); ' \
                  'for (var i=0; i<inputs.length; i++) {' \
                     'inputs[i].value = "' + KEY + '"' + '}'
 
+fill_all_textarea = 'var inputs = document.querySelectorAll("textarea"); ' \
+                 'for (var i=0; i<inputs.length; i++) {' \
+                    'inputs[i].value = "' + KEY + '"' + '}'
+
 
 def is_document_ready(driver):
     try:

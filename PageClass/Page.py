@@ -10,7 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import re
 import urllib
 
-
+HASH = "#SMILE"
 
 class Page(object):
     PATH = ''
@@ -36,6 +36,7 @@ class Page(object):
         Заполняет все input на странице текстом
         '''
         self.driver.execute_script(utils.fill_all_input)
+        self.driver.execute_script(utils.fill_all_textarea)
 
     def _get_all_forms(self):
         '''
@@ -119,10 +120,10 @@ class Page(object):
 
         return urls_with_parameters
 
-    def is_alert_appear(self):
+    def check_xss(self):
         try:
-            WebDriverWait(self.driver, 5, 0.5).until(EC.alert_is_present())
-            return True
+            hash = self.driver.execute_script("return location.hash")
+            return HASH == hash
 
         except TimeoutException:
             return False
@@ -151,12 +152,3 @@ class Page(object):
                 return True
 
         return False
-
-
-
-
-
-
-
-
-
