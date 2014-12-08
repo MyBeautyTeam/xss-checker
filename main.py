@@ -43,7 +43,6 @@ if __name__ == '__main__':
     time.sleep(20)
     # =======
 
-    '''
 
     link_container = LinkContainer.LinkContainer()
     link_container.add([MAIN_URL])
@@ -51,19 +50,17 @@ if __name__ == '__main__':
     urls_with_parameters = []
     i = 0
     print('Generating map of site')
+
     while ((i < link_container.get_length()) and (i < MAX_PAGES)):
         url = link_container.get_link(i)
         print('.')
-        #print(i, url, link_container.get_length())
+
         page = Page(driver=driver, url=url)
         page.open()
 
         link_container.add(page.get_inner_links())
 
         urls_with_parameters += page.try_page()
-
-        #if page.is_alert_appear():
-         #   print('text = ', page.get_alert_text_and_close())
 
         i += 1
         time.sleep(0.5)
@@ -76,7 +73,6 @@ if __name__ == '__main__':
 
     #urls_with_parameters = set(['https://xss-doc.appspot.com/demo/2?query=abcd']) #Сделать список уникальным
 
-    '''
     urls_with_parameters = set(['http://192.168.5.52/DVWA-1.0.8/vulnerabilities/xss_r/?name=abcd#']) #Сделать список уникальным
     xss_checker = XssChecker(driver)
     print('Finding xss...')

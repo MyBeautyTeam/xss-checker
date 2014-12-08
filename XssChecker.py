@@ -130,6 +130,7 @@ class XssChecker(object):
 
     medium_xss_list = [
             '<IMG """><SCRIPT>location.hash = "SMILE"</SCRIPT>">'
+            '<IMG """><SCRIPT>alert("XSS")</SCRIPT>">',
             ]
 
     def __init__(self, driver):
