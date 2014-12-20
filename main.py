@@ -106,6 +106,9 @@ if __name__ == '__main__':
     for url in urls_with_parameters:
         xss_checker.find_xss(url)
 
+    print("RESULT:")
+    print(xss_checker.xss_urls)
+
     # Если поиск в диалоге, может глючить. Для него не нужна карта сайта!
     #xss_checker.find_xss_in_one_page(MAIN_URL)
 
